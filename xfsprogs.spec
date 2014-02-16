@@ -1,14 +1,11 @@
 Summary:	Tools for the XFS filesystem
 Name:		xfsprogs
-Version:	3.1.8
+Version:	3.1.11
 Release:	1
 License:	LGPL v2.1 (libhandle), GPL v2 (the rest)
 Group:		Applications/System
 Source0:	ftp://linux-xfs.sgi.com/projects/xfs/cmd_tars/%{name}-%{version}.tar.gz
-# Source0-md5:	f70b2e7200d4c29f0af1cf70e7be1db6
-Patch0:		%{name}-miscfix-v2.patch
-Patch2:		%{name}-sharedlibs.patch
-Patch4:		%{name}-dynamic_exe.patch
+# Source0-md5:	de9f1f45026c2f4e0776058d429ff4b6
 URL:		http://oss.sgi.com/projects/xfs/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -44,22 +41,14 @@ filesystems.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch2 -p1
-%patch4 -p1
-
-rm -f include/{builddefs,platform_defs}.h
 
 %build
+export DEBUG="-DNDEBUG"
+export OPTIMIZER="%{rpmcflags}"
 %{__aclocal} -I m4
 %{__autoconf}
-%configure \
-	--enable-gettext	\
-	--enable-readline
-
-%{__make} -j1 \
-	DEBUG="-DNDEBUG"	\
-	OPTIMIZER="%{rpmcflags} -DENABLE_GETTEXT"
+%configure
+%{__make} -j1 V=1
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -69,13 +58,15 @@ DIST_INSTALL=$(pwd)/install.manifest
 DIST_INSTALL_DEV=$(pwd)/install-dev.manifest
 export DIST_ROOT DIST_INSTALL DIST_INSTALL_DEV
 
-%{__make} install \
+%{__make} -j1 install \
 	DIST_MANIFEST="$DIST_INSTALL"
-%{__make} install-dev \
+%{__make} -j1 install-dev \
 	DIST_MANIFEST="$DIST_INSTALL_DEV"
 
 mv $RPM_BUILD_ROOT{/%{_lib}/*,%{_libdir}}
 mv $RPM_BUILD_ROOT{/sbin/*,%{_sbindir}}
+
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.{a,la}
 
 %find_lang %{name}
 rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}
@@ -98,24 +89,11 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %ghost %{_libdir}/libhandle.so.?
-%attr(755,root,root) %ghost %{_libdir}/libxcmd.so.?
-%attr(755,root,root) %ghost %{_libdir}/libxfs.so.?
-%attr(755,root,root) %ghost %{_libdir}/libxlog.so.?
 %attr(755,root,root) %{_libdir}/libhandle.so.*.*.*
-%attr(755,root,root) %{_libdir}/libxcmd.so.*.*.*
-%attr(755,root,root) %{_libdir}/libxfs.so.*.*.*
-%attr(755,root,root) %{_libdir}/libxlog.so.*.*.*
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libhandle.so
-%attr(755,root,root) %{_libdir}/libxcmd.so
-%attr(755,root,root) %{_libdir}/libxfs.so
-%attr(755,root,root) %{_libdir}/libxlog.so
-%{_libdir}/libhandle.la
-%{_libdir}/libxcmd.la
-%{_libdir}/libxfs.la
-%{_libdir}/libxlog.la
 %{_includedir}/xfs
 %{_mandir}/man3/*.3*
 
