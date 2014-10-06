@@ -1,11 +1,11 @@
 Summary:	Tools for the XFS filesystem
 Name:		xfsprogs
-Version:	3.1.11
+Version:	3.2.1
 Release:	1
 License:	LGPL v2.1 (libhandle), GPL v2 (the rest)
 Group:		Applications/System
 Source0:	ftp://linux-xfs.sgi.com/projects/xfs/cmd_tars/%{name}-%{version}.tar.gz
-# Source0-md5:	de9f1f45026c2f4e0776058d429ff4b6
+# Source0-md5:	5c6905932029c8f9207fe5a0a8aac24b
 URL:		http://oss.sgi.com/projects/xfs/
 BuildRequires:	autoconf
 BuildRequires:	automake
